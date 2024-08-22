@@ -1,0 +1,113 @@
+name: Build IAR in wine
+
+on:
+  deployment:
+  repository_dispatch:
+  workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+
+env:
+  PROJECT_URL: https://github.com/koptserg/motion.git
+  PROJECT: motion
+  CONFIGURATION: DIYRuZ_Motion
+  # PROJECT_URL: https://github.com/diyruz/AirSense.git
+  # PROJECT: AirSense
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: download extractors
+        run: |
+          wget https://gist.githubusercontent.com/devbis/3af879434ddd7375fc0a1d98dd153f86/raw/extract_install_shield.py
+          wget https://github.com/devbis/unshield/releases/download/1.5.1/unshield-ubuntu.zip -O unshield.zip
+          7z e unshield.zip bin/
+          chmod +x unshield
+          rm -rf unshield.zip bin
+
+      - name: download and extract EW8051 as rar
+        run: |
+          wget http://netstorage.iar.com/SuppDB/Protected/PRODUPD/013455/EW8051-10301-Autorun.exe -O EW8051.exe
+          7z x EW8051.exe -oew8051
+
+      - name: extract setup
+        run: |
+          7z x ./ew8051/ew/setup.exe -osetup
+          python3 extract_install_shield.py ./ew8051/ew/setup.exe
+          mv ./ew8051/ew/setup_u .
+          ./unshield  -d data1 x ./setup_u/Disk1/data1.cab
+          ./unshield  -d data2 x ./setup_u/Disk1/data2.cab
+        shell: bash
+
+      - name: merge compiler
+        run: |
+          mkdir embedded_workbench
+          curl -L https://gist.githubusercontent.com/devbis/1271e50da867822da7757425e74ef795/raw/merge.py -o merge.py
+          python3 merge.py data1 embedded_workbench
+          python3 merge.py data2 embedded_workbench
+          rm -rf data1 data2
+          find embedded_workbench
+        shell: bash
+
+      - name: merge2 compiler
+        run: |
+          curl -L https://gist.githubusercontent.com/devbis/1d27459052e80eddb3cdc655d3a8eb76/raw/binpatch.py -o binpatch.py
+          python3 binpatch.py embedded_workbench/8051/bin/icc8051.exe "006AB9D0: B0 01 C2 08 00" "006ABBA0: B0 01 C2 08 00" "006AE430: 31 C0 C2 0C 00"
+        shell: bash
+
+      # install SDK
+      
+      - name: download SDK
+        run: | 
+          curl -L https://github.com/gregdavill/flower-mon/archive/07b0f505abffd3f88a8ad9f52eac1a3f4bd3fe1f.zip -o zstack.zip
+          mkdir zstack_dir
+          7z x zstack.zip -ozstack_dir "flower-mon-07b0f505abffd3f88a8ad9f52eac1a3f4bd3fe1f/firmware/vendor/Z-Stack_3.0.2"
+          rm -rf zstack.zip
+          mv "zstack_dir/flower-mon-07b0f505abffd3f88a8ad9f52eac1a3f4bd3fe1f/firmware/vendor/Z-Stack_3.0.2" .
+          mv Z-Stack_3.0.2 zstack
+          rm -rf zstack_dir
+          find zstack
+        shell: bash
+
+      - name: clone repo
+        run: | 
+          git clone ${{ env.PROJECT_URL }} --depth 1
+          mkdir -p zstack/Projects/zstack/HomeAutomation/
+          mv ${{ env.PROJECT }} zstack/Projects/zstack/HomeAutomation/
+
+      - name: install wine
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo mkdir -pm755 /etc/apt/keyrings
+          sudo wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
+          sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/jammy/winehq-jammy.sources
+          # sudo apt-add-repository https://dl.winehq.org/wine-builds/ubuntu/
+          sudo apt-get update
+
+          sudo apt-get install -y --install-recommends winehq-stable
+          # sudo apt-get install -y winetricks
+          # sudo apt-get install -y winbind
+
+      - name: build firmware
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: |
+            mkdir -p ~/wine
+            export WINEPREFIX=$HOME/wine
+            export WINEARCH=win32 
+            wineconsole --backend=curses embedded_workbench\common\bin\IarBuild.exe zstack\Projects\zstack\HomeAutomation\${{ env.PROJECT }}\CC2530DB\GenericApp.ewp -build ${{ env.CONFIGURATION }} -log all
+
+      # - name: build firmware
+      #   id: firmware
+      #   run: |
+      #     wineconsole embedded_workbench\common\bin\IarBuild.exe zstack\Projects\zstack\HomeAutomation\${{ env.PROJECT }}\CC2530DB\GenericApp.ewp -build ${{ env.CONFIGURATION }} -log all
+
+      # - name: Test isx/ISx.exe
+      #   uses: coactions/setup-xvfb@v1
+      #   with:
+      #     run: wineconsole isx/ISx.exe
+          
