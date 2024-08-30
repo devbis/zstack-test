@@ -10,13 +10,16 @@ on:
     branches: [ main ]
 
 env:
+  PROJECT_URL: https://github.com/koptserg/t-monitor.git
+  PROJECT: t-monitor
+  CONFIGURATION: DIYRuZ_T-monitor_tft35
   # PROJECT_URL: https://github.com/koptserg/motion.git
   # PROJECT: motion
   # CONFIGURATION: DIYRuZ_Motion
-  PROJECT_URL: https://github.com/diyruz/AirSense.git
-  PROJECT: AirSense
-  CONFIGURATION: DIYRuZ_AirSense_EndDevice
-  SUBMODULES: 1
+  # PROJECT_URL: https://github.com/diyruz/AirSense.git
+  # PROJECT: AirSense
+  # CONFIGURATION: DIYRuZ_AirSense_EndDevice
+  # SUBMODULES: 0
 
 jobs:
   build:
