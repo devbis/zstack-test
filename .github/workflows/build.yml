@@ -146,8 +146,8 @@ jobs:
         if: env.SUBMODULES == 'true'
         run: |
           cd zstack/Projects/zstack/HomeAutomation/${{ env.PROJECT }}
-          sed -i 's/git@github.com:/https:\/\/github.com\//g' .git/config
-          git submodule update --init
+          sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+          git submodule update --init --recursive
           cd -
         shell: bash
 
