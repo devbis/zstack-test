@@ -10,11 +10,12 @@ on:
     branches: [ main ]
 
 env:
-  PROJECT_URL: https://github.com/koptserg/motion.git
-  PROJECT: motion
-  CONFIGURATION: DIYRuZ_Motion
-  # PROJECT_URL: https://github.com/diyruz/AirSense.git
-  # PROJECT: AirSense
+  # PROJECT_URL: https://github.com/koptserg/motion.git
+  # PROJECT: motion
+  # CONFIGURATION: DIYRuZ_Motion
+  PROJECT_URL: https://github.com/diyruz/AirSense.git
+  PROJECT: AirSense
+  CONFIGURATION: DIYRuZ_AirSense_EndDevice
 
 jobs:
   build:
