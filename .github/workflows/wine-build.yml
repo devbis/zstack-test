@@ -45,21 +45,81 @@ jobs:
 
       - name: merge compiler
         run: |
+          cat <<EOF> binpatch.py
+          import argparse
+          import shutil
+
+          def patch_file(file_path: str, patches: list):
+              with open(file_path, 'rb+') as f:
+                  for patch in patches:
+                      pos, new_bytes = patch
+                      f.seek(pos)
+                      print(hex(pos), new_bytes.hex(' '))
+                      f.write(new_bytes)
+
+          if __name__ == '__main__':
+              parser = argparse.ArgumentParser(
+                  description='Move merge src into dest. Overwrite existing files.'
+              )
+              parser.add_argument('file_path')
+              parser.add_argument('patch_line', nargs="+",)
+              args = parser.parse_args()
+              patches = []
+              for patch in args.patch_line:
+                  pos, new_bytes = patch.split(':')
+                  pos = int(pos, 16)
+                  new_bytes = bytes.fromhex(new_bytes)
+                  patches.append((pos, new_bytes))
+
+              shutil.copy(args.file_path, args.file_path + '.bak')
+              patch_file(args.file_path, patches)
+          EOF
+          cat <<EOF> merge.py
+          import argparse
+          import os
+          import shutil
+
+          def merge_subdirs(source_root, dest_root):
+              for subdir in os.listdir(source_root):
+                  move_merge_dirs(os.path.join(source_root, subdir), dest_root)
+
+          def move_merge_dirs(source_root, dest_root):
+              for path, dirs, files in os.walk(source_root, topdown=False):
+                  dest_dir = os.path.join(
+                      dest_root,
+                      os.path.relpath(path, source_root)
+                  )
+                  if not os.path.exists(dest_dir):
+                      os.makedirs(dest_dir)
+                  for filename in files:
+                      try: 
+                          os.rename(
+                              os.path.join(path, filename),
+                              os.path.join(dest_dir, filename)
+                          )
+                      except FileExistsError:
+                        pass
+                  for dirname in dirs:
+                      shutil.rmtree(os.path.join(path, dirname))
+
+              shutil.rmtree(source_root)
+
+
+          if __name__ == '__main__':
+              parser = argparse.ArgumentParser()
+              parser.add_argument('src_dir')
+              parser.add_argument('dest_dir')
+              args = parser.parse_args()
+              merge_subdirs(args.src_dir, args.dest_dir)
+          EOF
+
           mkdir embedded_workbench
-          curl -L https://gist.githubusercontent.com/devbis/1271e50da867822da7757425e74ef795/raw/merge.py -o merge.py
           python3 merge.py data1 embedded_workbench
           python3 merge.py data2 embedded_workbench
           rm -rf data1 data2
+          python3 binpatch.py embedded_workbench/8051/bin/icc8051.exe "006AB9D0: B0 01 C2 08 00" "006ABBA0: B0 01 C2 08 00" "006AE430: 31 C0 C2 0C 00"
           find embedded_workbench
         shell: bash
-
-      - name: merge2 compiler
-        run: |
-          curl -L https://gist.githubusercontent.com/devbis/1d27459052e80eddb3cdc655d3a8eb76/raw/binpatch.py -o binpatch.py
-          python3 binpatch.py embedded_workbench/8051/bin/icc8051.exe "006AB9D0: B0 01 C2 08 00" "006ABBA0: B0 01 C2 08 00" "006AE430: 31 C0 C2 0C 00"
-        shell: bash
-
-      # install SDK
       
       - name: download SDK
         run: | 
