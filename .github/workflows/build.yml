@@ -146,8 +146,10 @@ jobs:
         if: env.SUBMODULES == 'true'
         run: |
           cd zstack/Projects/zstack/HomeAutomation/${{ env.PROJECT }}
+          sed -i 's/git@github.com:/https:\/\/github.com\//g' .git/config
           git submodule update --init
           cd -
+        shell: bash
 
       - name: build firmware
         id: firmware
