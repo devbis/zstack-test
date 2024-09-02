@@ -26,7 +26,7 @@ jobs:
          curl -L https://github.com/ericchristoffersen/Unshield_MSVC2019/raw/master/Unshield_MSVC2019.exe -o unshield.exe
         shell: bash
 
-      - name: dDwnload and extract EW8051
+      - name: Download and extract EW8051
         run: |
           curl -L http://netstorage.iar.com/SuppDB/Protected/PRODUPD/013455/EW8051-10301-Autorun.exe -o EW8051.exe
           7z.exe x EW8051.exe -oew8051
@@ -135,6 +135,7 @@ jobs:
           cd zstack 
           curl -L ${{ env.PATCH_PATH }} -o sdk.patch
           git apply sdk.patch
+          rm -rf zstack/Projects/zstack/ZNP/CC253{x,8}/{bin,dev}
       #     git clone ${{ env.PROJECT_URL }} --depth 1
       #     mkdir -p zstack/Projects/zstack/HomeAutomation/
       #     mv ${{ env.PROJECT }} zstack/Projects/zstack/HomeAutomation/
@@ -156,7 +157,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Build firmware
+      - name: Print content
         id: debug-files
         run: |
           find zstack/Projects/zstack/ZNP/ | grep hex

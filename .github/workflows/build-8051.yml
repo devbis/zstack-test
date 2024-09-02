@@ -34,7 +34,7 @@ jobs:
          curl -L https://github.com/ericchristoffersen/Unshield_MSVC2019/raw/master/Unshield_MSVC2019.exe -o unshield.exe
         shell: bash
 
-      - name: dDwnload and extract EW8051
+      - name: Download and extract EW8051
         run: |
           curl -L http://netstorage.iar.com/SuppDB/Protected/PRODUPD/013455/EW8051-10301-Autorun.exe -o EW8051.exe
           7z.exe x EW8051.exe -oew8051
