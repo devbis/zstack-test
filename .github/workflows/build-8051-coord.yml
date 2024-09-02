@@ -136,7 +136,10 @@ jobs:
           cd zstack 
           curl -L ${{ env.PATCH_PATH }} -o sdk.patch
           git apply sdk.patch
-          rm -rf zstack/Projects/zstack/ZNP/CC253{x,8}/{bin,dev}
+          rm -rf zstack/Projects/zstack/ZNP/CC253x/bin/
+          rm -rf zstack/Projects/zstack/ZNP/CC253x/dev/
+          rm -rf zstack/Projects/zstack/ZNP/CC2538/bin/
+          rm -rf zstack/Projects/zstack/ZNP/CC2538/dev/
       #     git clone ${{ env.PROJECT_URL }} --depth 1
       #     mkdir -p zstack/Projects/zstack/HomeAutomation/
       #     mv ${{ env.PROJECT }} zstack/Projects/zstack/HomeAutomation/
