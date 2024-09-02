@@ -156,6 +156,14 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Build firmware
+        id: debug-files
+        run: |
+          find zstack/Projects/zstack/ZNP/ | grep hex
+          find zstack/Projects/zstack/ZNP/ 
+          echo "status=success" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         if: steps.firmware.outputs.status == 'success' && !cancelled()
