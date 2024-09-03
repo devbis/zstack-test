@@ -1,4 +1,4 @@
-name: Build IAR 8051
+name: Build IAR 8051 coordinator
 
 on:
   deployment:
