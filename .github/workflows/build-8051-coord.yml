@@ -133,6 +133,7 @@ jobs:
       - name: Patch SDK
         shell: bash
         run: | 
+          set -x
           cd zstack 
           curl -L ${{ env.PATCH_PATH }} -o sdk.patch
           git apply sdk.patch
@@ -140,7 +141,6 @@ jobs:
           rm -rf zstack/Projects/zstack/ZNP/CC253x/{bin,dev}
           rm -rf zstack/Projects/zstack/ZNP/CC2538/{bin,dev}
 
-          find zstack/Projects/zstack/ZNP/ | grep hex
           find zstack/Projects/zstack/ZNP/ 
 
       # rm -rf zstack/Projects/zstack/ZNP/CC2538/bin
@@ -168,7 +168,7 @@ jobs:
       - name: Print content
         id: debug-files
         run: |
-          find zstack/Projects/zstack/ZNP/ | grep hex
+          find zstack/Projects/zstack/ZNP/ | grep hex || true
           find zstack/Projects/zstack/ZNP/ 
           echo "status=success" >> $GITHUB_OUTPUT
         shell: bash
