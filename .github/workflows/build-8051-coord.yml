@@ -143,21 +143,6 @@ jobs:
 
           find zstack/Projects/zstack/ZNP/ 
 
-      # rm -rf zstack/Projects/zstack/ZNP/CC2538/bin
-      # rm -rf zstack/Projects/zstack/ZNP/CC2538/dev        
-      #     git clone ${{ env.PROJECT_URL }} --depth 1
-      #     mkdir -p zstack/Projects/zstack/HomeAutomation/
-      #     mv ${{ env.PROJECT }} zstack/Projects/zstack/HomeAutomation/
-
-      # - name: Fetch submodules
-      #   if: env.SUBMODULES == '1'
-      #   run: |
-      #     cd zstack/Projects/zstack/HomeAutomation/${{ env.PROJECT }}
-      #     sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-      #     git submodule update --init --recursive
-      #     cd -
-      #   shell: bash
-
       - name: Build firmware
         id: firmware
         run: |
@@ -179,4 +164,4 @@ jobs:
         with:
           name: firmware
           path: |
-            zstack/Projects/zstack/ZNP/CC253x/CC2531-ZNP-with-SBL/Exe/*
+            zstack/Projects/zstack/ZNP/CC253x/CC2531-${{ env.CONFIGURATION }}/Exe/*
