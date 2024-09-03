@@ -138,6 +138,7 @@ jobs:
           git apply sdk.patch
           cd -
           rm -rf zstack/Projects/zstack/ZNP/CC253x/{bin,dev}
+          rm -rf zstack/Projects/zstack/ZNP/CC2538/{bin,dev}
 
           find zstack/Projects/zstack/ZNP/ | grep hex
           find zstack/Projects/zstack/ZNP/ 
