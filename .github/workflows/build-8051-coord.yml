@@ -179,4 +179,4 @@ jobs:
         with:
           name: firmware
           path: |
-            zstack/Projects/zstack/ZNP/CC253x/firmwares/*.hex
+            zstack/Projects/zstack/ZNP/CC253x/CC2531-ZNP-with-SBL/Exe/*
