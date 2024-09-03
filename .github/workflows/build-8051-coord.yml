@@ -136,10 +136,11 @@ jobs:
           cd zstack 
           curl -L ${{ env.PATCH_PATH }} -o sdk.patch
           git apply sdk.patch
+          cd -
           rm -rf zstack/Projects/zstack/ZNP/CC253x/bin/
           rm -rf zstack/Projects/zstack/ZNP/CC253x/dev/
           rm -rf zstack/Projects/zstack/ZNP/CC2538/bin/
-          rm -rf zstack/Projects/zstack/ZNP/CC2538/dev/
+          rm -rf zstack/Projects/zstack/ZNP/CC2538/dev/        
 
           find zstack/Projects/zstack/ZNP/ | grep hex
           find zstack/Projects/zstack/ZNP/ 
