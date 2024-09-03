@@ -140,6 +140,10 @@ jobs:
           rm -rf zstack/Projects/zstack/ZNP/CC253x/dev/
           rm -rf zstack/Projects/zstack/ZNP/CC2538/bin/
           rm -rf zstack/Projects/zstack/ZNP/CC2538/dev/
+
+          find zstack/Projects/zstack/ZNP/ | grep hex
+          find zstack/Projects/zstack/ZNP/ 
+
       #     git clone ${{ env.PROJECT_URL }} --depth 1
       #     mkdir -p zstack/Projects/zstack/HomeAutomation/
       #     mv ${{ env.PROJECT }} zstack/Projects/zstack/HomeAutomation/
